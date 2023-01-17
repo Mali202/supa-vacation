@@ -22,20 +22,24 @@ const transporter = createTransport({
 
 const emailsDir = path.resolve(process.cwd(), 'emails');
 const sendVerificationRequest = ({identifier, url}) => {
-    const emailFile = readFileSync(path.join(emailsDir, 'confirm-email.html'), {
-        encoding: 'utf8',
-    });
-    const emailTemplate = Handlebars.compile(emailFile);
-    transporter.sendMail({
-        from: `"✨ SupaVacation" ${process.env.EMAIL_FROM}`,
-        to: identifier,
-        subject: 'Your sign-in link for SupaVacation',
-        html: emailTemplate({
-            base_url: process.env.NEXTAUTH_URL,
-            signin_url: url,
-            email: identifier,
-        }),
-    });
+    try {
+        const emailFile = readFileSync(path.join(emailsDir, 'confirm-email.html'), {
+            encoding: 'utf8',
+        });
+        const emailTemplate = Handlebars.compile(emailFile);
+        transporter.sendMail({
+            from: `"✨ SupaVacation" ${process.env.EMAIL_FROM}`,
+            to: identifier,
+            subject: 'Your sign-in link for SupaVacation',
+            html: emailTemplate({
+                base_url: process.env.NEXTAUTH_URL,
+                signin_url: url,
+                email: identifier,
+            }),
+        });
+    } catch (e) {
+        console.log(`❌ Unable to send sign-in email to user (${identifier})`);
+    }
 }
 
 export default NextAuth({
@@ -52,4 +56,5 @@ export default NextAuth({
         }),
     ],
     adapter: PrismaAdapter(prisma),
+    events: { createUser: sendWelcomeEmail },
 });

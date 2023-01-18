@@ -93,7 +93,13 @@ const AuthModal = ({ show = false, onClose = () => null }) => {
   };
 
   const signInWithGoogle = () => {
-    // TODO: Perform Google auth
+    setDisabled(true);
+    const { error } = signIn('google', {
+      callbackUrl: window.location.href,
+    });
+    if (error) {
+      throw new Error(error);
+    }
   };
 
   const closeModal = () => {

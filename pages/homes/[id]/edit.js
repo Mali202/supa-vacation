@@ -35,7 +35,7 @@ export async function getServerSideProps(context) {
     };
 }
 
-const Edit = () => {
+const Edit = (home = null) => {
     return (
         <Layout>
             <div className="max-w-screen-sm mx-auto">
@@ -44,7 +44,13 @@ const Edit = () => {
                     Fill out the form below to update your home.
                 </p>
                 <div className="mt-8">
-                    <ListingForm buttonText="Update home" />
+                    {home ? (
+                        <ListingForm
+                            initialValues={home}
+                            buttonText="Update home"
+                            redirectPath={`/homes/${home.id}`}
+                        />
+                    ) : null}
                 </div>
             </div>
         </Layout>

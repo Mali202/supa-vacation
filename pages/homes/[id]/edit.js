@@ -2,6 +2,7 @@ import Layout from '@/components/Layout';
 import ListingForm from '@/components/ListingForm';
 import { getSession } from 'next-auth/react';
 import { PrismaClient } from '@prisma/client';
+import axios from "axios";
 
 const prisma = new PrismaClient();
 
@@ -36,6 +37,9 @@ export async function getServerSideProps(context) {
 }
 
 const Edit = (home = null) => {
+    const handleOnSubmit = data =>
+        axios.patch(`/api/homes/${home.id}`, data);
+
     return (
         <Layout>
             <div className="max-w-screen-sm mx-auto">
@@ -49,6 +53,7 @@ const Edit = (home = null) => {
                             initialValues={home}
                             buttonText="Update home"
                             redirectPath={`/homes/${home.id}`}
+                            onSubmit={handleOnSubmit}
                         />
                     ) : null}
                 </div>

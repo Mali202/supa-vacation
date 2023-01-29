@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import {useSession} from "next-auth/react";
 import {useEffect, useState} from "react";
 import axios from "axios";
+import {toast} from "react-hot-toast";
 
 // Instantiate Prisma Client
 const prisma = new PrismaClient();
@@ -46,6 +47,7 @@ export async function getStaticProps({ params }) {
 const ListedHome = (home = null) => {
     const { data: session } = useSession();
     const [isOwner, setIsOwner] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -62,6 +64,22 @@ const ListedHome = (home = null) => {
     }, [session?.user]);
 
     const router = useRouter();
+
+    const deleteHome = async () => {
+        let toastId;
+        try {
+            toastId = toast.loading('Deleting...');
+            setDeleting(true);
+
+            await axios.delete(`/api/homes/${home.id}`);
+            toast.success('Successfully deleted', { id: toastId });
+            router.push('/homes');
+        } catch (e) {
+            console.log(e);
+            toast.error('Unable to delete home', { id: toastId });
+            setDeleting(false);
+        }
+    };
 
     if (router.isFallback) {
         return 'Loading...';
@@ -102,7 +120,8 @@ const ListedHome = (home = null) => {
 
                             <button
                                 type="button"
-                                onClick={() => null}
+                                disabled={deleting}
+                                onClick={deleteHome}
                                 className="rounded-md border border-rose-500 text-rose-500 hover:bg-rose-500 hover:text-white focus:outline-none transition disabled:bg-rose-500 disabled:text-white disabled:opacity-50 disabled:cursor-not-allowed px-4 py-1"
                             >
                                 Delete

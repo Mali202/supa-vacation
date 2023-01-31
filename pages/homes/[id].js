@@ -1,14 +1,11 @@
 import Image from 'next/image';
 import Layout from '@/components/Layout';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { useRouter } from 'next/router';
 import {useSession} from "next-auth/react";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {toast} from "react-hot-toast";
-
-// Instantiate Prisma Client
-const prisma = new PrismaClient();
 
 export async function getStaticPaths() {
     // Get all the homes IDs from the database

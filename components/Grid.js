@@ -1,12 +1,40 @@
 import PropTypes from 'prop-types';
 import Card from '@/components/Card';
 import { ExclamationIcon } from '@heroicons/react/outline';
+import {useState, useEffect} from "react";
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import {useSession} from "next-auth/react";
 
 const Grid = ({ homes = [] }) => {
+  const { status } = useSession();
+  const [favourites, setFavourites] = useState([]);
+  useEffect(() => {
+    if (status === "authenticated") {
+      axios.get("api/user/favourites").then(res => setFavourites(res.data));
+    }
+  }, [status])
   const isEmpty = homes.length === 0;
 
   const toggleFavorite = async id => {
-    // TODO: Add/remove home from the authenticated user's favorites
+    let toastId;
+    if (!favourites.find(home => home.id === id)) {
+      toastId = toast.loading("Adding to favourites");
+      try {
+        await axios.put(`api/homes/${id}/favourite`);
+        toast.success("Home added to favourites", {id: toastId})
+      } catch (e) {
+        toast.error("Could not add to favourites ", {id: toastId});
+      }
+    } else {
+      toastId = toast.loading("Removing from favourites");
+      try {
+        await axios.delete(`api/homes/${id}/favourite`);
+        toast.success("Home removed from favourites", {id: toastId})
+      } catch (e) {
+        toast.error("Could not remove from favourites", {id: toastId});
+      }
+    }
   };
 
   return isEmpty ? (
@@ -17,7 +45,12 @@ const Grid = ({ homes = [] }) => {
   ) : (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {homes.map(home => (
-        <Card key={home.id} {...home} onClickFavorite={toggleFavorite} />
+        <Card
+            key={home.id}
+            {...home}
+            onClickFavorite={toggleFavorite}
+            favorite={favourites.find(fHome => fHome.id === home.id)}
+        />
       ))}
     </div>
   );

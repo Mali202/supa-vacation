@@ -47,3 +47,11 @@ export default async function handler(req, res) {
             .json({ message: `HTTP method ${req.method} is not supported.` });
     }
 }
+
+export const config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '4mb',
+        },
+    },
+}

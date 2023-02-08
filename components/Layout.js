@@ -31,7 +31,7 @@ const menuItems = [
   {
     label: 'Favorites',
     icon: HeartIcon,
-    href: '/favorites',
+    href: '/favourites',
   },
   {
     label: 'Logout',

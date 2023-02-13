@@ -17,6 +17,11 @@ const Grid = ({ homes = [] }) => {
   const isEmpty = homes.length === 0;
 
   const toggleFavorite = async id => {
+    if (status !== "authenticated") {
+      toast.error("Login to add favourites")
+      return;
+    }
+
     let toastId;
     if (!favourites.find(home => home.id === id)) {
       toastId = toast.loading("Adding to favourites");

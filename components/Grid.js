@@ -40,6 +40,7 @@ const Grid = ({ homes = [] }) => {
         toast.error("Could not remove from favourites", {id: toastId});
       }
     }
+    axios.get("api/user/favourites").then(res => setFavourites(res.data));
   };
 
   return isEmpty ? (
